@@ -7,8 +7,13 @@
 
 #include "declaration.h"
 
+//Déclaration des variables
+float Temps = 0;
+
+
 //identifiant des shaders
 GLuint shader_program_id;
+GLuint shader_program_id2;
 GLuint gui_program_id;
 
 camera cam;
@@ -19,7 +24,6 @@ objet3d obj[nb_obj];
 const int nb_text = 2;
 text text_to_draw[nb_text];
 
-bool 
 
 /*****************************************************************************\
 * initialisation                                                              *
@@ -27,6 +31,8 @@ bool
 static void init()
 {
   shader_program_id = glhelper::create_program_from_file("shaders/shader.vert", "shaders/shader.frag"); CHECK_GL_ERROR();
+  shader_program_id2 = glhelper::create_program_from_file("shaders/shader.vert", "shaders/shader_texture.frag"); CHECK_GL_ERROR();
+
 
   cam.projection = matrice_projection(60.0f*M_PI/180.0f,1.0f,0.01f,100.0f);
   cam.tr.translation = vec3(0.0f, 1.0f, 0.0f);
@@ -99,6 +105,7 @@ static void special_callback(int key, int, int)
 \*****************************************************************************/
 static void timer_callback(int)
 {
+   Temps+=0.025;
   glutTimerFunc(25, timer_callback, 0);
   glutPostRedisplay();
 }
@@ -212,6 +219,12 @@ void draw_obj3d(const objet3d* const obj, camera cam)
     glUniform4f(loc_translation_model , t.x,t.y,t.z , 0.0f);                                     CHECK_GL_ERROR();
   }
   glBindVertexArray(obj->vao);                                              CHECK_GL_ERROR();
+
+  if (obj->prog == shader_program_id2) {
+      GLint loc_time = glGetUniformLocation(obj->prog, "temps"); CHECK_GL_ERROR();
+      if (loc_time == -1) std::cerr << "Pas de variable uniforme : temps" << std::endl;
+      glUniform1f(loc_time, Temps);                                     CHECK_GL_ERROR();
+  }
 
   glBindTexture(GL_TEXTURE_2D, obj->texture_id);                            CHECK_GL_ERROR();
   glDrawElements(GL_TRIANGLES, 3*obj->nb_triangle, GL_UNSIGNED_INT, 0);     CHECK_GL_ERROR();
@@ -353,7 +366,7 @@ void init_model_2()
   obj[1].texture_id = glhelper::load_texture("data/grass.tga");
 
   obj[1].visible = true;
-  obj[1].prog = shader_program_id;
+  obj[1].prog = shader_program_id2;
 }
 
 

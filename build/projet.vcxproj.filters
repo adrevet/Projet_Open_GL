@@ -18,6 +18,7 @@
     <None Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\shaders\gui.vert" />
     <None Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\shaders\shader.frag" />
     <None Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\shaders\shader.vert" />
+    <None Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\shaders\shader_texture.frag" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

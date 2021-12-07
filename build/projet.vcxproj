@@ -327,6 +327,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </None>
     <None Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\shaders\shader.vert">
     </None>
+    <None Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\shaders\shader_texture.frag">
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\build\ZERO_CHECK.vcxproj">
