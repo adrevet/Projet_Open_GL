@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\src\declaration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\shaders\gui.frag" />
+    <None Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\shaders\gui.vert" />
+    <None Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\shaders\shader.frag" />
+    <None Include="C:\Users\alexa\OneDrive\CPE 4A\S7\TSI\projet_tsi\shaders\shader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{ABA0AF25-83BF-3D96-89E4-92A809A3F2C4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{AEDB11E3-860B-3A6D-AAC9-44C2B36C1F92}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
