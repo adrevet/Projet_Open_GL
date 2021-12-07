@@ -1,0 +1,2 @@
+Si on veut pas mettre notre cube entre -1 et 1 il faut faire comme dans la fonction init_model_3() avec la matrice
+où notre carré sera donc entre s et -s et après il faut l'update_normals
