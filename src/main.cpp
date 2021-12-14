@@ -9,6 +9,7 @@
 
 //Déclaration des variables
 float Temps = 0;
+bool JUMPING = false;
 
 
 //identifiant des shaders
@@ -64,13 +65,43 @@ static void init()
 {
   glClearColor(0.5f, 0.6f, 0.9f, 1.0f); CHECK_GL_ERROR();
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); CHECK_GL_ERROR();
-
+  /// <summary>
+  /// Faire bouger le sol
+  /// </summary>
   for(int i = 0; i < nb_obj; ++i)
     draw_obj3d(obj + i, cam);
 
   for(int i = 0; i < nb_text; ++i)
     draw_text(text_to_draw + i);
+  
+  /// <sFaire sauter le dinosaure
+  /// </summary>
+  float vitesse_saut = 0.2f;
+  if (JUMPING) {
+      if (obj[2].tr.translation.y <= 2.0f) {
+          obj[2].tr.translation.y += vitesse_saut * (2.01f - obj[2].tr.translation.y);
+      }
+      else {
+          JUMPING = false;
+      }
+  }
+  else {
+      if (obj[2].tr.translation.y > 0.1f) {
+          obj[2].tr.translation.y += -(vitesse_saut/3.0f)* (3.0f - obj[2].tr.translation.y);
+      }
+  }
 
+  float distance = 0.4f;
+  // Partie pour deplacer les obstacles
+  obj[0].tr.translation.x += distance * (-0.1f);
+  obj[0].tr.translation.z += distance * (-0.14f);
+  //Si notre obstable sort du cadre, on le remet a sa position d'origine
+  if (obj[0].tr.translation.x < -17.0f) {
+      obj[0].tr.translation = vec3(4.0f, 0.0f, 1.0f);
+  }
+  
+
+  //Changement de buffer d'affichage pour éviter un effet de scintillement
   glutSwapBuffers();
 }
 
@@ -87,7 +118,12 @@ static void keyboard_callback(unsigned char key, int, int)
     case 'q':
     case 'Q':
     case 27:
-      exit(0);
+        exit(0);
+    case ' ':
+        if (obj[2].tr.translation.y < 0.1f) {
+            JUMPING = true;
+        }
+        
       break;
   }
 }
@@ -316,7 +352,7 @@ void init_model_1()
   obj[0].visible = true;
   obj[0].prog = shader_program_id;
 
-  obj[0].tr.translation = vec3(-2.0, 0.0, -10.0);
+  obj[0].tr.translation = vec3(4.0, 0.0, 1.0);
 }
 
 void init_model_2()
@@ -385,6 +421,10 @@ void init_model_3()
   apply_deformation(&m,matrice_rotation(M_PI,0.0f,1.0f,0.0f));
   apply_deformation(&m,transform);
 
+  // Centre la rotation du modele 1 autour de son centre de gravite approximatif
+  obj[2].tr.rotation_center = vec3(0.5f, 1.0f, 0.0f);
+
+
   update_normals(&m);
   fill_color(&m,vec3(1.0f,1.0f,1.0f));
 
@@ -396,5 +436,6 @@ void init_model_3()
   obj[2].visible = true;
   obj[2].prog = shader_program_id;
 
-  obj[2].tr.translation = vec3(2.0, 0.0, -10.0);
+  obj[2].tr.translation = vec3(-4.0, 0.0, -10.0);
+  obj[2].tr.rotation_euler = vec3(0.0, 1.0, 0.0); //le vec3 contient des variables en radian
 }
