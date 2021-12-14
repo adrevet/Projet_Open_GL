@@ -10,7 +10,13 @@
 //Déclaration des variables
 float Temps = 0;
 bool JUMPING = false;
+bool RUNNING = false;
 
+//Liste des indices des obstacles dans la liste "obj"
+int i_o[] = { 0, 3, 4 };
+const int nb_obstacle = 3;
+const int nb_obj = 5;
+objet3d obj[nb_obj];
 
 //identifiant des shaders
 GLuint shader_program_id;
@@ -18,9 +24,6 @@ GLuint shader_program_id2;
 GLuint gui_program_id;
 
 camera cam;
-
-const int nb_obj = 3;
-objet3d obj[nb_obj];
 
 const int nb_text = 2;
 text text_to_draw[nb_text];
@@ -44,16 +47,18 @@ static void init()
   init_model_1();
   init_model_2();
   init_model_3();
+  init_model_4();
+  init_model_5();
 
   gui_program_id = glhelper::create_program_from_file("shaders/gui.vert", "shaders/gui.frag"); CHECK_GL_ERROR();
 
-  text_to_draw[0].value = "CPE";
+  text_to_draw[0].value = "PRESS 'A' TO START";
   text_to_draw[0].bottomLeft = vec2(-0.2, 0.5);
   text_to_draw[0].topRight = vec2(0.2, 1);
   init_text(text_to_draw);
 
   text_to_draw[1]=text_to_draw[0];
-  text_to_draw[1].value = "Lyon";
+  text_to_draw[1].value = "DRECHON";
   text_to_draw[1].bottomLeft.y = 0.0f;
   text_to_draw[1].topRight.y = 0.5f;
 }
@@ -61,49 +66,72 @@ static void init()
 /*****************************************************************************\
 * display_callback                                                           *
 \*****************************************************************************/
- static void display_callback()
+static void display_callback()
 {
-  glClearColor(0.5f, 0.6f, 0.9f, 1.0f); CHECK_GL_ERROR();
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); CHECK_GL_ERROR();
-  /// <summary>
-  /// Faire bouger le sol
-  /// </summary>
-  for(int i = 0; i < nb_obj; ++i)
-    draw_obj3d(obj + i, cam);
+    float hitbox_joueur = 0.4f;
+    float hitbox_obstacle = 0.4f;
 
-  for(int i = 0; i < nb_text; ++i)
-    draw_text(text_to_draw + i);
-  
-  /// <sFaire sauter le dinosaure
-  /// </summary>
-  float vitesse_saut = 0.2f;
-  if (JUMPING) {
-      if (obj[2].tr.translation.y <= 2.0f) {
-          obj[2].tr.translation.y += vitesse_saut * (2.01f - obj[2].tr.translation.y);
-      }
-      else {
-          JUMPING = false;
-      }
-  }
-  else {
-      if (obj[2].tr.translation.y > 0.1f) {
-          obj[2].tr.translation.y += -(vitesse_saut/3.0f)* (3.0f - obj[2].tr.translation.y);
-      }
-  }
+    glClearColor(0.5f, 0.6f, 0.9f, 1.0f); CHECK_GL_ERROR();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); CHECK_GL_ERROR();
+    for (int i = 0; i < nb_obj; ++i)
+        draw_obj3d(obj + i, cam);
 
-  float distance = 0.4f;
-  // Partie pour deplacer les obstacles
-  obj[0].tr.translation.x += distance * (-0.1f);
-  obj[0].tr.translation.z += distance * (-0.14f);
-  //Si notre obstable sort du cadre, on le remet a sa position d'origine
-  if (obj[0].tr.translation.x < -17.0f) {
-      obj[0].tr.translation = vec3(4.0f, 0.0f, 1.0f);
-  }
-  
+    for (int i = 0; i < nb_text; ++i)
+        draw_text(text_to_draw + i);
 
-  //Changement de buffer d'affichage pour éviter un effet de scintillement
-  glutSwapBuffers();
+    if (RUNNING) {
+        float vitesse_saut = 0.2f;
+        //
+        //
+        ///Verification de la hitbox entre le joueur et les obstacles
+       
+
+        for (int i = 0; i < nb_obstacle; i++) {
+            //if (norm(obj[2])-norm[obj[i_o[i]]) ???
+            if ((obj[2].tr.translation.x - obj[i_o[i]].tr.translation.x) * (obj[2].tr.translation.x - obj[i_o[i]].tr.translation.x)
+                + (obj[2].tr.translation.y - obj[i_o[i]].tr.translation.y) * (obj[2].tr.translation.y - obj[i_o[i]].tr.translation.y)
+                + (obj[2].tr.translation.z - obj[i_o[i]].tr.translation.z) * (obj[2].tr.translation.z - obj[i_o[i]].tr.translation.z)
+                <= (hitbox_joueur + hitbox_obstacle) * (hitbox_joueur + hitbox_obstacle))
+            {
+                RUNNING = false;
+            }
+        }
+            //Deplacement dinosaure
+            if (JUMPING) {
+                if (obj[2].tr.translation.y <= 2.0f) {
+                    obj[2].tr.translation.y += vitesse_saut * (2.01f - obj[2].tr.translation.y);
+                }
+                else {
+                    JUMPING = false;
+                }
+            }
+            else {
+                if (obj[2].tr.translation.y > 0.1f) {
+                    obj[2].tr.translation.y += -(vitesse_saut / 3.0f) * (3.0f - obj[2].tr.translation.y);
+                }
+            }
+        
+        float distance = 0.4f;
+
+        //
+        // 
+        // Partie pour deplacer les obstacles
+        for (int i = 0; i < nb_obstacle; i++) {
+            obj[i_o[i]].tr.translation.x += distance * (-0.1f);
+            obj[i_o[i]].tr.translation.z += distance * (-0.14f);
+        
+            //Si notre obstable sort du cadre, on le remet a sa position d'origine
+            if (obj[i_o[i]].tr.translation.x < -17.0f) {
+                obj[i_o[i]].tr.translation = vec3(4.0f, 0.0f, 1.0f);
+            }
+        }
+    }
+    
+    //Changement de buffer d'affichage pour éviter un effet de scintillement
+    glutSwapBuffers();
 }
+ 
+
 
 /*****************************************************************************\
 * keyboard_callback                                                           *
@@ -119,6 +147,9 @@ static void keyboard_callback(unsigned char key, int, int)
     case 'Q':
     case 27:
         exit(0);
+    case 'a':
+        RUNNING = true;
+        break;
     case ' ':
         if (obj[2].tr.translation.y < 0.1f) {
             JUMPING = true;
@@ -141,7 +172,7 @@ static void special_callback(int key, int, int)
 \*****************************************************************************/
 static void timer_callback(int)
 {
-   Temps+=0.025;
+  Temps+=0.025;
   glutTimerFunc(25, timer_callback, 0);
   glutPostRedisplay();
 }
@@ -260,6 +291,12 @@ void draw_obj3d(const objet3d* const obj, camera cam)
       GLint loc_time = glGetUniformLocation(obj->prog, "temps"); CHECK_GL_ERROR();
       if (loc_time == -1) std::cerr << "Pas de variable uniforme : temps" << std::endl;
       glUniform1f(loc_time, Temps);                                     CHECK_GL_ERROR();
+  }
+
+  if (obj->prog == shader_program_id2) {
+      GLint loc_running = glGetUniformLocation(obj->prog, "RUNNING"); CHECK_GL_ERROR();
+      if (loc_running == -1) std::cerr << "Pas de variable uniforme : running" << std::endl;
+      glUniform1i(loc_running, RUNNING);                                    CHECK_GL_ERROR();
   }
 
   glBindTexture(GL_TEXTURE_2D, obj->texture_id);                            CHECK_GL_ERROR();
@@ -438,4 +475,20 @@ void init_model_3()
 
   obj[2].tr.translation = vec3(-4.0, 0.0, -10.0);
   obj[2].tr.rotation_euler = vec3(0.0, 1.0, 0.0); //le vec3 contient des variables en radian
+
+  //Definition de la taille de sa sphere englobante
+}
+
+void init_model_4()
+{
+    // Centre la rotation du modele 1 autour de son centre de gravite approximatif
+    obj[3] = obj[0];
+    obj[3].tr.translation = vec3(-4.0, 0.0, -16.0);
+}
+
+void init_model_5()
+{
+    // Centre la rotation du modele 1 autour de son centre de gravite approximatif
+    obj[4] = obj[0];
+    obj[4].tr.translation = vec3(-1.0, 0.0, -5.0);
 }

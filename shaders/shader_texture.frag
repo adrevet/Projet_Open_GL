@@ -11,6 +11,7 @@ in vec2 vtex;
 
 uniform sampler2D texture;
 uniform float temps;
+uniform bool RUNNING;
 
 vec3 light=vec3(0.5,0.5,5.0);
 
@@ -29,11 +30,19 @@ void main (void)
 
   vec4 white = vec4(1.0,1.0,1.0,0.0);
 
+  if(temps < 1 || !RUNNING){
+	vec4 color_texture = texture2D(texture, vtex);
+	  vec4 color_final   = vcolor*color_texture;
+	  //couleur finale
+	  color = (ambiant+diffuse)*color_final+specular*white;
+  }
+
   //recuperation de la texture
-  vec4 color_texture = texture2D(texture, vtex + vec2(temps/30, temps/20));
-  vec4 color_final   = vcolor*color_texture;
-
-  //couleur finale
-  color = (ambiant+diffuse)*color_final+specular*white;
-
+  if(RUNNING){
+	  vec4 color_texture = texture2D(texture, vtex + vec2(temps/30, temps/20));
+	  vec4 color_final   = vcolor*color_texture;
+	  //couleur finale
+	  color = (ambiant+diffuse)*color_final+specular*white;
+  }
+ 
 }
