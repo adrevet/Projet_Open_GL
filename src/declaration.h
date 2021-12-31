@@ -73,5 +73,14 @@ void init_model_2();
 void init_model_3();
 void init_model_4();
 void init_model_5();
+void init_model_6();
+void init_model_7();
+void init_model_8();
+void init_model_9();
+void init_model_10();
+void init_model_11();
+void init_model_12();
+void init_model_13();
+void init_model_14();
 
 void draw_obj3d(const objet3d* const obj, camera cam);

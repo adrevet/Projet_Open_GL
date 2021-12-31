@@ -11,12 +11,26 @@
 float Temps = 0;
 bool JUMPING = false;
 bool RUNNING = false;
+int pb = 0; //Meilleur score
 
 //Liste des indices des obstacles dans la liste "obj"
 int i_o[] = { 0, 3, 4 };
+int i_bg[] = { 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
 const int nb_obstacle = 3;
-const int nb_obj = 5;
+const int nb_obj = 15;
+const int nb_obj_bg = 10;
 objet3d obj[nb_obj];
+vec3 position[] = {
+    vec3(4.0, 0.0, -5.0),
+    vec3(5.0, 0.0, -6.0),
+    vec3(6.0, 0.0, -7.0),
+    vec3(7.0, 0.0, -8.0),
+    vec3(8.0, 0.0, -9.0),
+    vec3(9.0, 0.0, -10.0),
+    vec3(10.0, 0.0, -11.0),
+    vec3(11.0, 0.0, -12.0),
+    vec3(12.0, 0.0, -13.0),
+};
 
 //identifiant des shaders
 GLuint shader_program_id;
@@ -25,7 +39,7 @@ GLuint gui_program_id;
 
 camera cam;
 
-const int nb_text = 2;
+const int nb_text = 3;
 text text_to_draw[nb_text];
 
 
@@ -49,6 +63,15 @@ static void init()
   init_model_3();
   init_model_4();
   init_model_5();
+  init_model_6();
+  init_model_7();
+  init_model_8();
+  init_model_9();
+  init_model_10();
+  init_model_11();
+  init_model_12();
+  init_model_13();
+  init_model_14(); 
 
   gui_program_id = glhelper::create_program_from_file("shaders/gui.vert", "shaders/gui.frag"); CHECK_GL_ERROR();
 
@@ -58,9 +81,14 @@ static void init()
   init_text(text_to_draw);
 
   text_to_draw[1]=text_to_draw[0];
-  text_to_draw[1].value = "DRECHON";
-  text_to_draw[1].bottomLeft.y = 0.0f;
-  text_to_draw[1].topRight.y = 0.5f;
+  text_to_draw[1].value = "Score:" + std::to_string(static_cast<int>(Temps)); //Affichage du score
+  text_to_draw[1].bottomLeft = vec2(0.6, 0);
+  text_to_draw[1].topRight = vec2(1, 0.95);
+
+  text_to_draw[2] = text_to_draw[0];
+  text_to_draw[2].value = "Meilleur score:" + std::to_string(pb);
+  text_to_draw[2].bottomLeft = vec2(0.5, 0.5);
+  text_to_draw[2].topRight = vec2(1, 1.1);
 }
 
 /*****************************************************************************\
@@ -81,6 +109,13 @@ static void display_callback()
 
     if (RUNNING) {
         float vitesse_saut = 0.2f;
+        text_to_draw[0].value = " ";
+        //Incrémentation du score
+        text_to_draw[1].value = "Score:" + std::to_string(static_cast<int>(Temps));
+        if (static_cast<int>(Temps) >= pb) {
+            pb = static_cast<int>(Temps);
+            text_to_draw[2].value = "Meilleur score:" + std::to_string(pb);
+        }
         //
         //
         ///Verification de la hitbox entre le joueur et les obstacles
@@ -125,6 +160,25 @@ static void display_callback()
                 obj[i_o[i]].tr.translation = vec3(4.0f, 0.0f, 1.0f);
             }
         }
+        //
+        // 
+        // Partie pour deplacer les objets en arrière-plan
+        for (int i = 0; i < nb_obj_bg; i++) {
+            obj[i_bg[i]].tr.translation.x += distance * (-0.1f);
+            obj[i_bg[i]].tr.translation.z += distance * (-0.14f);
+
+            //Si notre obstable sort du cadre, on le remet a sa position d'origine
+            if (obj[i_bg[i]].tr.translation.x < -17.0f) //-17.0f
+            {
+                int coord_rand = rand() % 8;
+                obj[i_bg[i]].tr.translation = position[coord_rand];
+            }
+        }
+    }
+    else {
+        Temps = 0;
+        text_to_draw[1].value = "Score:" + std::to_string(static_cast<int>(Temps));
+        text_to_draw[0].value = "PRESS 'A' TO START";
     }
     
     //Changement de buffer d'affichage pour éviter un effet de scintillement
@@ -148,6 +202,7 @@ static void keyboard_callback(unsigned char key, int, int)
     case 27:
         exit(0);
     case 'a':
+    case 'A':
         RUNNING = true;
         break;
     case ' ':
@@ -172,7 +227,7 @@ static void special_callback(int key, int, int)
 \*****************************************************************************/
 static void timer_callback(int)
 {
-  Temps+=0.025;
+  Temps += 0.025;
   glutTimerFunc(25, timer_callback, 0);
   glutPostRedisplay();
 }
@@ -398,10 +453,10 @@ void init_model_2()
   mesh m;
 
   //coordonnees geometriques des sommets
-  vec3 p0=vec3(-25.0f,0.0f,-25.0f);
-  vec3 p1=vec3( 25.0f,0.0f,-25.0f);
-  vec3 p2=vec3( 25.0f,0.0f, 25.0f);
-  vec3 p3=vec3(-25.0f,0.0f, 25.0f);
+  vec3 p0=vec3(-50.0f,0.0f,-50.0f);
+  vec3 p1=vec3(50.0f,0.0f,-50.0f);
+  vec3 p2=vec3(50.0f,0.0f, 50.0f);
+  vec3 p3=vec3(-50.0f,0.0f, 50.0f);
 
   //normales pour chaque sommet
   vec3 n0=vec3(0.0f,1.0f,0.0f);
@@ -491,4 +546,74 @@ void init_model_5()
     // Centre la rotation du modele 1 autour de son centre de gravite approximatif
     obj[4] = obj[0];
     obj[4].tr.translation = vec3(-1.0, 0.0, -5.0);
+}
+
+void init_model_6()
+{
+    // Centre la rotation du modele 1 autour de son centre de gravite approximatif
+    obj[5] = obj[2];
+    obj[5].tr.translation = vec3(12.0, 0.0, -13.0);
+}
+
+void init_model_7()
+{
+    // Centre la rotation du modele 1 autour de son centre de gravite approximatif
+    obj[6] = obj[2];
+    obj[6].tr.translation = vec3(9.0, 0.0, -9.0);
+}
+
+void init_model_8()
+{
+    // Centre la rotation du modele 1 autour de son centre de gravite approximatif
+    obj[7] = obj[2];
+    obj[7].tr.translation = vec3(13.0, 0.0, -2.0);
+}
+
+void init_model_9()
+{
+    // Centre la rotation du modele 1 autour de son centre de gravite approximatif
+    obj[8] = obj[2];
+    obj[8].tr.translation = vec3(13.0, 0.0, -7.0);
+}
+
+void init_model_10()
+{
+    // Centre la rotation du modele 1 autour de son centre de gravite approximatif
+    obj[9] = obj[2];
+    obj[9].tr.translation = vec3(15.0, 0.0, -9.0);
+}
+
+void init_model_11()
+{
+    // Centre la rotation du modele 1 autour de son centre de gravite approximatif
+    obj[10] = obj[2];
+    obj[10].tr.translation = vec3(13.0, 0.0, 3.0);
+}
+
+void init_model_12()
+{
+    // Centre la rotation du modele 1 autour de son centre de gravite approximatif
+    obj[11] = obj[2];
+    obj[11].tr.translation = vec3(20.0, 0.0, -2.0);
+}
+
+void init_model_13()
+{
+    // Centre la rotation du modele 1 autour de son centre de gravite approximatif
+    obj[12] = obj[2];
+    obj[12].tr.translation = vec3(18.0, 0.0, 6.0);
+}
+
+void init_model_14()
+{
+    // Centre la rotation du modele 1 autour de son centre de gravite approximatif
+    obj[13] = obj[2];
+    obj[13].tr.translation = vec3(25.0, 0.0, 1.0);
+}
+
+void init_model_15()
+{
+    // Centre la rotation du modele 1 autour de son centre de gravite approximatif
+    obj[14] = obj[2];
+    obj[14].tr.translation = vec3(27.0, 0.0, 9.0);
 }

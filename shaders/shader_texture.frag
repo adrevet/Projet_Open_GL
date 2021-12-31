@@ -39,7 +39,7 @@ void main (void)
 
   //recuperation de la texture
   if(RUNNING){
-	  vec4 color_texture = texture2D(texture, vtex + vec2(temps/30, temps/20));
+	  vec4 color_texture = texture2D(texture, vtex + vec2(temps/60, temps/40));
 	  vec4 color_final   = vcolor*color_texture;
 	  //couleur finale
 	  color = (ambiant+diffuse)*color_final+specular*white;
