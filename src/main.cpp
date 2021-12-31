@@ -172,6 +172,10 @@ static void display_callback()
             {
                 int coord_rand = rand() % 8;
                 obj[i_bg[i]].tr.translation = position[coord_rand];
+                obj[i_bg[i]].tr.rotation_euler = vec3(
+                    static_cast <float> (rand()) / static_cast <float> (RAND_MAX)*3.14, 
+                    static_cast <float> (rand()) / static_cast <float> (RAND_MAX)*3.14, 
+                    static_cast <float> (rand()) / static_cast <float> (RAND_MAX)*3.14);
             }
         }
     }
